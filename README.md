@@ -90,7 +90,7 @@ func main() {
 }
 ```
 
-## GELF (graylog)
+### GELF (graylog)
 
 ```go
 import "gopkg.in/Graylog2/go-gelf.v1/gelf"

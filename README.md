@@ -105,7 +105,7 @@ if err != nil {
 
 ```go
 import (
-  "log"
+	"log"
 	"log/syslog"
 
 	"github.com/lillilli/logger"

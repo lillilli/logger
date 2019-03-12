@@ -48,7 +48,7 @@ func Init(params Params) {
 
 	var writer io.Writer = os.Stderr
 
-	// Setuping different log levels (by default ["DEBUG", "WARN", "INFO", "ERROR", "FATAL"])
+	// Setting up different log levels (by default ["DEBUG", "WARN", "INFO", "ERROR", "FATAL"])
 	if params.Levels != nil {
 		levels = []logutils.LogLevel{}
 
@@ -57,12 +57,12 @@ func Init(params Params) {
 		}
 	}
 
-	// Setuping min logging level (DEBUG by default)
+	// Setting up min logging level (DEBUG by default)
 	if params.MinLevel != "" {
 		minLevel = logutils.LogLevel(strings.ToUpper(params.MinLevel))
 	}
 
-	// Setuping output writer for log (os.Stderr by default)
+	// Setting up output writer for log (os.Stderr by default)
 	if params.Writer != nil {
 		writer = params.Writer
 	}

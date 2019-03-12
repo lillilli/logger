@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/lillilli/jsonrpc?status.svg)](https://godoc.org/github.com/lillilli/logger)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/lillilli/logger/master/LICENSE)
 
-Simple logger broker under hashicorp/logutils.
+Simple logger broker build upon [hashicorp/logutils](https://github.com/hashicorp/logutils).
 
 ## Description
 

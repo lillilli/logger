@@ -17,12 +17,12 @@ Logger params setup by one call of Init(logger.Prams) method:
 ```go
 // Params - logger params
 type Params struct {
-    // Output interface
-    Writer   io.Writer
-    // Log levels
-    Levels   []string
-    // Min log level (all logs, that stand before that level will not be logged)
-    MinLevel string
+  // Output interface
+  Writer   io.Writer
+  // Log levels
+  Levels   []string
+  // Min log level (all logs, that stand before that level will not be logged)
+  MinLevel string
 }
 ```
 
@@ -31,20 +31,20 @@ Logger interface:
 ```go
 // Logger - logger interface
 type Logger interface {
-    Debug(msg string)
-    Debugf(msg string, args ...interface{})
+  Debug(msg string)
+  Debugf(msg string, args ...interface{})
 
-    Info(msg string)
-    Infof(format string, args ...interface{})
+  Info(msg string)
+  Infof(format string, args ...interface{})
 
-    Warn(msg string)
-    Warnf(format string, args ...interface{})
+  Warn(msg string)
+  Warnf(format string, args ...interface{})
 
-    Error(msg string)
-    Errorf(format string, args ...interface{})
+  Error(msg string)
+  Errorf(format string, args ...interface{})
 
-    Fatal(msg string)
-    Fatalf(format string, args ...interface{})
+  Fatal(msg string)
+  Fatalf(format string, args ...interface{})
 }
 ```
 
@@ -64,29 +64,29 @@ type Logger interface {
 package main
 
 import (
-	"github.com/lillilli/logger"
+  "github.com/lillilli/logger"
 )
 
 type Service struct {
-	log logger.Logger
+  log logger.Logger
 }
 
 func NewService() *Service {
-	return &Service{
-		log: logger.NewLogger("service name"),
-	}
+  return &Service{
+    log: logger.NewLogger("service name"),
+  }
 }
 
 func (s *Service) SayHi(name string) {
-	s.log.Infof("Saying hi to %s", name)
+  s.log.Infof("Saying hi to %s", name)
 }
 
 func main() {
-	service := NewService()
-	service.SayHi("Alex")
+  service := NewService()
+  service.SayHi("Alex")
 
-	// Output:
-	// 2019/03/12 11:56:53 [INFO] service name: Saying hi to Alex
+  // Output:
+  // 2019/03/12 11:56:53 [INFO] service name: Saying hi to Alex
 }
 ```
 
@@ -97,7 +97,7 @@ import "gopkg.in/Graylog2/go-gelf.v1/gelf"
 
 gelfWriter, err := gelf.NewWriter("localhost:12201")
 if err != nil {
-    return errors.Wrap(err, "unable to create gelf writer")
+  return errors.Wrap(err, "unable to create gelf writer")
 }
 ```
 
@@ -114,16 +114,16 @@ import (
 func main() {
   logWriter, err := syslog.New(syslog.LOG_NOTICE, "service_name")
 
-	if err != nil {
-		log.Fatalf("Unable to create syslog writer: %v", err)
-	}
+  if err != nil {
+    log.Fatalf("Unable to create syslog writer: %v", err)
+  }
 
-	logger.Init(logger.Params{
-		Writer: logWriter,
-	})
+  logger.Init(logger.Params{
+    Writer: logWriter,
+  })
 
-	log := logger.NewLogger("service")
-	log.Info("I'm going to syslog")
+  log := logger.NewLogger("service")
+  log.Info("I'm going to syslog")
 }
 ```
 
@@ -133,7 +133,7 @@ func main() {
 logWriter, err := syslog.Dial("udp", "rsyslog:514", syslog.LOG_NOTICE, "service_name")
 
 if err != nil {
-    return errors.Wrap(err, "unable to create syslog writer")
+  return errors.Wrap(err, "unable to create syslog writer")
 }
 ```
 
@@ -143,7 +143,7 @@ if err != nil {
 logWriter, err := syslog.Dial("tcp", "rsyslog:10514", syslog.LOG_NOTICE, "service_name")
 
 if err != nil {
-    return errors.Wrap(err, "unable to create syslog writer")
+  return errors.Wrap(err, "unable to create syslog writer")
 }
 ```
 

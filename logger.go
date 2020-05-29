@@ -1,122 +1,53 @@
 package logger
 
 import (
-	"fmt"
 	"io"
-	"log"
 	"os"
-	"strings"
 
-	"github.com/hashicorp/logutils"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-// Simple broker under logutils
+// Logger - wrapper for zerolog.Logger type
+type Logger = zerolog.Logger
 
-// Logger - logger interface
-type Logger interface {
-	Debug(msg string)
-	Debugf(msg string, args ...interface{})
+var writer io.Writer = zerolog.ConsoleWriter{Out: os.Stderr}
 
-	Info(msg string)
-	Infof(format string, args ...interface{})
-
-	Warn(msg string)
-	Warnf(format string, args ...interface{})
-
-	Error(msg string)
-	Errorf(format string, args ...interface{})
-
-	Fatal(msg string)
-	Fatalf(format string, args ...interface{})
-}
-
-// Params - logger params
+// Params - represents logger configuration
+// Fields:
+// HumanFriendly - sets up human friendly log formatting
+// MinLevel - sets up min logged level, logger support levels: trace, debug, info, warn, error, fatal, panic
 type Params struct {
-	Writer   io.Writer
-	Levels   []string
-	MinLevel string `env:"LOG_LEVEL" default:"DEBUG"`
+	HumanFriendly bool   `default:"false" json:"humanFriendly"`
+	MinLevel      string `default:"debug" json:"minLevel"`
 }
 
-type logger struct {
-	packageName string
-}
-
-// Init - logger initialization
+// Init - initialize logger via specified configuration
+// params:
+// logger support levels: trace, debug, info, warn, error, fatal, panic
 func Init(params Params) {
-	levels := []logutils.LogLevel{"DEBUG", "WARN", "INFO", "ERROR", "FATAL"}
-	minLevel := logutils.LogLevel("DEBUG")
+	level, err := zerolog.ParseLevel(params.MinLevel)
+	if err != nil {
+		log.Warn().Str("unit", "logger").
+			Str("level", params.MinLevel).
+			Msg("Unexpected initial logger min level, level will be debug")
 
-	var writer io.Writer = os.Stderr
-
-	// Setting up different log levels (by default ["DEBUG", "WARN", "INFO", "ERROR", "FATAL"])
-	if params.Levels != nil {
-		levels = []logutils.LogLevel{}
-
-		for _, level := range params.Levels {
-			levels = append(levels, logutils.LogLevel(strings.ToUpper(level)))
-		}
+		level = zerolog.DebugLevel
 	}
 
-	// Setting up min logging level (DEBUG by default)
-	if params.MinLevel != "" {
-		minLevel = logutils.LogLevel(strings.ToUpper(params.MinLevel))
+	zerolog.SetGlobalLevel(level)
+
+	if !params.HumanFriendly {
+		writer = os.Stderr
 	}
-
-	// Setting up output writer for log (os.Stderr by default)
-	if params.Writer != nil {
-		writer = params.Writer
-	}
-
-	filter := &logutils.LevelFilter{
-		Levels:   levels,
-		MinLevel: minLevel,
-		Writer:   writer,
-	}
-
-	log.SetOutput(filter)
 }
 
-// NewLogger - return new logger instance
-func NewLogger(packageName string) Logger {
-	return logger{packageName: packageName + ":"}
+// New - returns new logger instance with unit name
+func New(unit string) Logger {
+	return log.Output(writer).With().Str("unit", unit).Timestamp().Logger()
 }
 
-func (l logger) Debug(msg string) {
-	log.Println("[DEBUG]", l.packageName, msg)
-}
-
-func (l logger) Debugf(format string, args ...interface{}) {
-	l.Debug(fmt.Sprintf(format, args...))
-}
-
-func (l logger) Info(msg string) {
-	log.Println("[INFO]", l.packageName, msg)
-}
-
-func (l logger) Infof(format string, args ...interface{}) {
-	l.Info(fmt.Sprintf(format, args...))
-}
-
-func (l logger) Warn(msg string) {
-	log.Println("[WARN]", l.packageName, msg)
-}
-
-func (l logger) Warnf(format string, args ...interface{}) {
-	l.Warn(fmt.Sprintf(format, args...))
-}
-
-func (l logger) Error(msg string) {
-	log.Println("[ERROR]", l.packageName, msg)
-}
-
-func (l logger) Errorf(format string, args ...interface{}) {
-	l.Error(fmt.Sprintf(format, args...))
-}
-
-func (l logger) Fatal(msg string) {
-	log.Println("[FATAL]", l.packageName, msg)
-}
-
-func (l logger) Fatalf(format string, args ...interface{}) {
-	l.Fatal(fmt.Sprintf(format, args...))
+// NewLogger - returns new logger instance
+func NewLogger() Logger {
+	return log.Output(writer).With().Timestamp().Logger()
 }
